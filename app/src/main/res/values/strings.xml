@@ -2,8 +2,10 @@
     <string name="app_name">cbeasplus</string>
     <string name="button">Button</string>
     <string name="enable">Switch</string>
-    <string name="select_emergency_type">Emergency Type</string>
+    <string name="emergency_type">Select Emergency Type</string>
     <string name="incidence_type">Incidence Type</string>
     <string name="spinner_hint">Indicate incidence type</string>
-
+    <string name="txPhoneNo">Alert Source Mobile No.</string>
+    <string name="txSentMsg">Alert Message</string>
+    <string name="msgRpt">Messaging Status</string>
 </resources>

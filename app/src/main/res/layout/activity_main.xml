@@ -10,13 +10,15 @@
 
     <Button
         android:id="@+id/btnSendAlert"
-        android:layout_width="268dp"
-        android:layout_height="202dp"
+        android:layout_width="208dp"
+        android:layout_height="159dp"
         android:text="@string/button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.592" />
 
     <Switch
         android:id="@+id/btn_sw_enable"
@@ -25,11 +27,12 @@
         android:minHeight="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.811"
+        app:layout_constraintHorizontal_bias="0.841"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.809"
+        app:layout_constraintVertical_bias="0.826"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     <Spinner
         android:id="@+id/spinner_emergency_type"
         android:layout_width="222dp"
@@ -38,26 +41,26 @@
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.544"
+        app:layout_constraintHorizontal_bias="0.534"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.228"
+        app:layout_constraintVertical_bias="0.342"
         tools:ignore="SpeakableTextPresentCheck"
         tools:listitem="@layout/activity_main" />
 
     <TextView
         android:id="@+id/emergencyType"
-        android:layout_width="196dp"
-        android:layout_height="57dp"
+        android:layout_width="243dp"
+        android:layout_height="38dp"
         android:fontFamily="sans-serif-black"
-        android:text = "@string/select_emergency_type"
-        android:textColor="#E91E63"
+        android:text="@string/emergency_type"
+        android:textColor="#D81B60"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintHorizontal_bias="0.226"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.108" />
+        app:layout_constraintVertical_bias="0.242" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
