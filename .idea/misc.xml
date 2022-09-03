@@ -4,7 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/activity_main.xml" value="0.128" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/activity_register.xml" value="0.264" />
         <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/activity_sms_broadcast_rx.xml" value="0.152" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/activity_webview.xml" value="0.13854166666666667" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/content_webview.xml" value="0.13854166666666667" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/fragment_first.xml" value="0.1" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/layout/fragment_second.xml" value="0.1" />
+        <entry key="..\:/Main_Store/Andriod_app/cbeasplus/app/src/main/res/menu/menu.xml" value="0.25416666666666665" />
       </map>
     </option>
   </component>

@@ -63,9 +63,9 @@ public class SmsBroadcastRx extends BroadcastReceiver {
                 //P indicate begining of Phone number
                 //B indicate body of message
 
-                strMessage += "T" + msgs[i].getTimestampMillis();
-                strMessage += "P"+ msgs[i].getOriginatingAddress();
-                strMessage += "B" + msgs[i].getMessageBody();
+                
+                straddr +=    msgs[i].getOriginatingAddress();
+                strMessage += msgs[i].getMessageBody();
 
                 // Log and display the SMS message.
                 Log.d(TAG, "onReceive: " + strMessage);

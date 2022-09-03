@@ -130,7 +130,7 @@ public class GPSTracker extends Service implements LocationListener
             Log.d("mLat", "main_lat: " + latitude);
             Log.d( "mLong", "main_long: "+ longitude);
 
-            Toast.makeText(getApplicationContext(), "Your location: \nLatitude " + latitude + "\nLongitude " + longitude, Toast.LENGTH_LONG).show();
+
         }
         else
         {
@@ -138,8 +138,11 @@ public class GPSTracker extends Service implements LocationListener
             showSettingsAlert();
         }
         DecimalFormat df = new DecimalFormat("#.##########");
-        String lat_str = Double.toString(Double.parseDouble(df.format(latitude)));
-        String long_str = Double.toString(Double.parseDouble(df.format(longitude)));
+        //String lat_str = Double.toString(Double.parseDouble(df.format(latitude)));
+        //String long_str = Double.toString(Double.parseDouble(df.format(longitude)));
+        //
+        String lat_str = Double.toString(latitude);
+        String long_str = Double.toString(longitude);
 
         //
         lat_str = lat_str.replace(".","");

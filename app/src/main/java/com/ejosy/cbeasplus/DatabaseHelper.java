@@ -15,6 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public static final String DB_NAME = "cbeasDB";
     public static final String TABLE_NAME = "cbeas_subscription";
+    public static final String TABLE_NAME_reg = "cbeas_reg";
     //
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_PHONE = "phone";
@@ -22,8 +23,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String COLUMN_DESIGNATION = "designation";
     public static final String COLUMN_AVENUE = "avenue";
     public static final String COLUMN_STREET = "street";
-
-   //database version
+    //
+    //database version
     private static final int DB_VERSION = 1;
 
     public DatabaseHelper(Context context)
@@ -41,6 +42,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 + COLUMN_AVENUE  + " VARCHAR, "
                 + COLUMN_STREET + " VARCHAR);";
         db.execSQL(sql);
+         //
+        String sql_reg = "CREATE TABLE " + TABLE_NAME_reg + "(" + COLUMN_PHONE + " VARCHAR  );";
+        db.execSQL(sql_reg);
 
     }
 
@@ -68,6 +72,27 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 db.close();
 
     }
+    public void  addClient_reg(String phone)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_PHONE, phone);
+        db.insert(TABLE_NAME_reg, null, contentValues);
+        db.close();
+
+    }
+
+    public void  updateClient_reg(String prev_phone,String new_phone )
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        //
+        contentValues.put(COLUMN_PHONE, new_phone);
+        //
+        db.update(TABLE_NAME_reg, contentValues, "phone=?", new String[]{prev_phone});
+       //
+        db.close();
+    }
 
     public void delete(String phone_no){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -81,6 +106,19 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         String sql = "SELECT phone, name  FROM " + TABLE_NAME + " ORDER BY " + COLUMN_PHONE + " ASC;";
         Cursor c = db.rawQuery(sql, null);
         return c;
+    }
+
+    @SuppressLint("Range")
+    public String getContent_reg()
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT phone  FROM " + TABLE_NAME ;
+        Cursor c = db.rawQuery(sql, null);
+        String phone = "";
+        if (c.moveToFirst()) {
+           phone = c.getString(c.getColumnIndex("phone"));
+        }
+            return phone;
     }
 
     public void delete()
@@ -117,5 +155,84 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return objectClient;
     }
 
+    public boolean PhoneExist_subscription(String phone_no)
+    {
+
+        String sql = "SELECT phone FROM " +TABLE_NAME  + " WHERE phone=" + phone_no.toString();
+        //String sql = "SELECT * FROM cisas WHERE phone=" + "8033927733";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        boolean status = false;
+        if (cursor.moveToFirst())
+        {
+            status = true;
+
+        }
+        else
+        {
+            status = false;
+        }
+        cursor.close();
+        db.close();
+        return status;
+
+    }
+
+    public boolean PhoneExist_reg()
+    {
+
+        String sql = "SELECT phone FROM " + TABLE_NAME_reg ;
+        //String sql = "SELECT * FROM cisas WHERE phone=" + "8033927733";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(sql, null);
+        boolean status = false;
+        if (cursor.moveToFirst())
+        {
+            status = true;
+
+        }
+        else
+        {
+            status = false;
+        }
+        cursor.close();
+        db.close();
+        return status;
+
+    }
+
+    public void  addClient(String phone)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_PHONE, phone);
+        db.insert(TABLE_NAME_reg, null, contentValues);
+        db.close();
+
+    }
+
+
+
+    public void delete_reg(String phone_no){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM "+ TABLE_NAME_reg + " WHERE " + COLUMN_PHONE + " = " + phone_no +"");
+        db.close();
+    }
+
+    public Cursor getContent_reg(String phone_no)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "SELECT phone  FROM " + TABLE_NAME_reg + " WHERE " + COLUMN_PHONE + " = " + phone_no +"";
+        Cursor c = db.rawQuery(sql, null);
+        return c;
+    }
+
+    public void delete_reg()
+    {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        //deleting rows
+        sqLiteDatabase.delete(TABLE_NAME_reg, null, null);
+        sqLiteDatabase.close();
+    }
 
 }

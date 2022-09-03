@@ -1,6 +1,7 @@
 package com.ejosy.cbeasplus;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -10,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -20,6 +22,8 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +44,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -57,9 +65,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // but unique for each permission.
     private static final int SMS_SEND_PERMISSION_CODE = 100;
     private static final int SMS_RECEIVED_PERMISSION_CODE = 101;
+    private static final int READ_PHONE_NUMBERS_PERMISSION_CODE = 102;
+    private static final int READ_PHONE_STATE_PERMISSION_CODE = 103;
+
     //Spinner
     public String selected_item = "";
+    public String selected_item_position = "";
     public String Extract_signal;
+    public String srcphone;
 
 
     @Override
@@ -71,6 +84,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         // REFRESH LOCAL DB
         LoadClients();
+        //
+        //Major Key to enable app usage
+        //
+        Switch switchEnableBtnAlarm= findViewById(R.id.btn_sw_enable);
+        if (!db.PhoneExist_reg())
+        {
+            //if not registerd, Popup dialog to direct User to register
+            //inorder to enable app usage
+            //disable Switch
+            String msgx = "Not Registered. \n Kindly register via the Option Menu \n Do you wish to Exit?";
+            switchEnableBtnAlarm.setEnabled(false);
+            exit_dialog(msgx);
+        }
+        else
+        {
+            switchEnableBtnAlarm.setEnabled(true);
+        }
         //
         //SIGNAL STRENGHT EXTRACT
         final TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
@@ -130,16 +160,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         spinner_emergency_type.setAdapter(dataAdapter_emergency_type);
         //
 
+
+
         Button activateAlertBtn = findViewById(R.id.btnSendAlert);
         activateAlertBtn.setEnabled(false);
         activateAlertBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = selected_item + ": Test Hello";
+
                 //
                 GPSTracker gpsTracker = new GPSTracker(MainActivity.this);
                 String GPSLocation = gpsTracker.getLocation();
                 //
+                String  msgTimeStamp =  TimeStamp();
 
                 checkPermission(Manifest.permission.SEND_SMS, SMS_SEND_PERMISSION_CODE);
                 //Toast.makeText(MainActivity.this, "Alert Btn Click", Toast.LENGTH_SHORT).show();
@@ -157,9 +190,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
                     Toast.makeText(MainActivity.this, "Phone Signal " + Extract_signal, Toast.LENGTH_SHORT).show();
                     Toast.makeText(MainActivity.this, "GPSLocation " + GPSLocation, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Message TimeStamp " +  msgTimeStamp, Toast.LENGTH_SHORT).show();
 
+                    //
+                    //Messaging
+                    //srcphone = GetNumber();
+                    String message = msgTimeStamp + selected_item_position + GPSLocation;
                     String phoneNumber = "+234" + phone;
-                 // sendSMS(phoneNumber, message);
+                    // sendSMS(phoneNumber, message);
+                    Toast.makeText(MainActivity.this, "Src Phone " +  srcphone, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Message " +  message, Toast.LENGTH_SHORT).show();
+                    //Logging of Performance Metrics
+                    //logdat();
+
+
 
 
                 }
@@ -168,10 +212,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             };
         });
 
-        Switch switchEnableBtnAlarm= findViewById(R.id.btn_sw_enable);
+
         switchEnableBtnAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (isChecked) {
                     activateAlertBtn.setEnabled(true);
                 } else {
@@ -179,6 +224,67 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
         });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.register:
+                //Toast.makeText(getApplicationContext(),"Item 1 Selected",Toast.LENGTH_LONG).show();
+                Intent myIntent = new Intent(MainActivity.this, RegisterActivity.class);
+                //myIntent.putExtra("key", value); //Optional parameters
+                MainActivity.this.startActivity(myIntent);
+                return true;
+
+            case R.id.exit:
+                Toast.makeText(getApplicationContext(),"Item 2 Selected",Toast.LENGTH_LONG).show();
+                String msg_display = "Do you really want to Exit";
+                exit_dialog(msg_display);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void exit_dialog(String msg)
+    {
+        // Create the object of AlertDialog Builder class
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        // Set the message show for the Alert time
+        builder.setMessage(msg);
+
+        // Set Alert Title
+        builder.setTitle("Alert !");
+
+        // Set Cancelable false for when the user clicks on the outside the Dialog Box then it will remain show
+        builder.setCancelable(false);
+
+        // Set the positive button with yes name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setPositiveButton("Yes", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // When the user click yes button then app will close
+            finish();
+        });
+
+        // Set the Negative button with No name Lambda OnClickListener method is use of DialogInterface interface.
+        builder.setNegativeButton("No", (DialogInterface.OnClickListener) (dialog, which) -> {
+            // If user click no then dialog box is canceled.
+            dialog.cancel();
+        });
+
+        // Create the Alert dialog
+        AlertDialog alertDialog = builder.create();
+        // Show the Alert Dialog box
+        alertDialog.show();
     }
 
     // Function to check and request permission.
@@ -223,6 +329,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(MainActivity.this, "SMS Received Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
+        else if (requestCode == READ_PHONE_NUMBERS_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Toast.makeText(MainActivity.this, "SMS Received Permission Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "READ PHONE NUMBERS Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if (requestCode == READ_PHONE_STATE_PERMISSION_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //Toast.makeText(MainActivity.this, "SMS Received Permission Granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "READ PHONE STATE Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
 
     }
     @Override
@@ -230,8 +352,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     {
       // On selecting a spinner item
         int rpt = parent.getCount();
-        int selected_item_position = position;
+        selected_item_position = String.valueOf(position);;
         selected_item  =  parent.getItemAtPosition(position).toString();
+
         // Toast.makeText(parent.getContext(), "Selected item position " + position, Toast.LENGTH_LONG).show();
        // Toast.makeText(parent.getContext(), "Selected: " + selected_item, Toast.LENGTH_LONG).show();
     }
@@ -354,6 +477,78 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    public String TimeStamp()
+    {
+        // Collect Data for logging
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        DateFormat timeFormat = new SimpleDateFormat("hh:mm a");
+        // get current date time with Date()
+        Date date = new Date();
+        String TodayDate = dateFormat.format(date).toString();
+        String TodayTime = timeFormat.format(date).toString();
+        //
+        String hourx_str ="00";
+        String minutex_str = "00";
+        String dayx_str = "00";
+        String monthx_str = "00";
 
 
+        // Extract Day, Month Hour and Minutes for Data Validity
+        Calendar instance = Calendar.getInstance();
+
+        int hourx = instance.get(Calendar.HOUR_OF_DAY);
+        int minutex = instance.get(Calendar.MINUTE);
+        int dayx = instance.get(Calendar.DAY_OF_MONTH);
+        int monthx = instance.get(Calendar.MONTH);
+        monthx = monthx + 1;
+        //
+        if (hourx<10)
+        { hourx_str = "0" + String.valueOf(hourx);  }
+        else
+        { hourx_str = String.valueOf(hourx); }
+        //
+        if (minutex<10)
+        { minutex_str = "0" + String.valueOf(minutex); }
+        else
+        { minutex_str = String.valueOf(minutex); }
+        //
+        if (dayx<10)
+        { dayx_str = "0" + String.valueOf(dayx); }
+        else
+        { dayx_str = String.valueOf(dayx); }
+        //
+        if (monthx<10)
+        { monthx_str = "0" + String.valueOf(monthx); }
+        else
+        { monthx_str = String.valueOf(monthx); }
+        //
+
+        String timestamp = monthx_str  + dayx_str  + hourx_str + minutex_str;
+
+        return timestamp;
+    }
+
+    // Function will run after click to button
+    public String GetNumber() {
+            // Permission check
+        //checkPermission(Manifest.permission.READ_PHONE_STATE, READ_PHONE_STATE_PERMISSION_CODE);
+        // Create obj of TelephonyManager and ask for current telephone service
+        checkPermission(Manifest.permission.READ_PHONE_NUMBERS, READ_PHONE_NUMBERS_PERMISSION_CODE);
+            TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+             String line1Number = telephonyManager.getLine1Number();
+            return line1Number;
+
+
+
+    }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        // put your code here...
+        Switch switchEnableBtnAlarm= findViewById(R.id.btn_sw_enable);
+        switchEnableBtnAlarm.setEnabled(true);
+
+    }
 }

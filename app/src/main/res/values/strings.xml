@@ -8,4 +8,9 @@
     <string name="txPhoneNo">Alert Source Mobile No.</string>
     <string name="txSentMsg">Alert Message</string>
     <string name="msgRpt">Messaging Status</string>
+    <!-- RegisterActivity -->
+    <string name="reg_status">Registration Status</string>
+    <string name="btn_reg">Register</string>
+    <string name="btn_verify_reg">Verify Registration Status</string>
+    <string name="txt_phone">Enter Phone Number</string>
 </resources>

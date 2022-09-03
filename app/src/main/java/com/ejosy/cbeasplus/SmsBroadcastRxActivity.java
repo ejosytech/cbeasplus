@@ -24,6 +24,8 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
             TextView txPhoneNo = findViewById(R.id.txPhoneNo);
             TextView txSentMsg = findViewById(R.id.txSentMsg);
 
+            txPhoneNo.setText(message);
+
         }
     }
 }
