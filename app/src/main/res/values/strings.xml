@@ -13,4 +13,5 @@
     <string name="btn_reg">Register</string>
     <string name="btn_verify_reg">Verify Registration Status</string>
     <string name="txt_phone">Enter Phone Number</string>
+    <string name="txaddress">Adress</string>
 </resources>

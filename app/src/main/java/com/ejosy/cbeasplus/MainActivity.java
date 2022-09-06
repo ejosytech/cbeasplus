@@ -173,6 +173,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String GPSLocation = gpsTracker.getLocation();
                 //
                 String  msgTimeStamp =  TimeStamp();
+                // Attach TimeStamp, Selected Message and GPSLocation
+                String message = msgTimeStamp + selected_item_position + GPSLocation;
+                //
 
                 checkPermission(Manifest.permission.SEND_SMS, SMS_SEND_PERMISSION_CODE);
                 //Toast.makeText(MainActivity.this, "Alert Btn Click", Toast.LENGTH_SHORT).show();
@@ -186,26 +189,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     @SuppressLint("Range") String phone = Cptr.getString(0);
                     @SuppressLint("Range") String Name = Cptr.getString(1);
                     //Toast.makeText(MainActivity.this, "Phone:" + phone, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Alert Sent to " + Name, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Alert Sent to " + Name, Toast.LENGTH_SHORT).show();
 
-                    Toast.makeText(MainActivity.this, "Phone Signal " + Extract_signal, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "GPSLocation " + GPSLocation, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Message TimeStamp " +  msgTimeStamp, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Phone Signal " + Extract_signal, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "GPSLocation " + GPSLocation, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Message TimeStamp " +  msgTimeStamp, Toast.LENGTH_SHORT).show();
 
                     //
                     //Messaging
                     //srcphone = GetNumber();
-                    String message = msgTimeStamp + selected_item_position + GPSLocation;
-                    String phoneNumber = "+234" + phone;
-                    // sendSMS(phoneNumber, message);
-                    Toast.makeText(MainActivity.this, "Src Phone " +  srcphone, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Message " +  message, Toast.LENGTH_SHORT).show();
+                 if (phone != "8033927733") {
+                     String phoneNumber = "+234" + phone;
+                     sendSMS(phoneNumber, message);
+                 }
+
+                    //Toast.makeText(MainActivity.this, "Src Phone " +  srcphone, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "Message " +  message, Toast.LENGTH_SHORT).show();
                     //Logging of Performance Metrics
                     //logdat();
-
-
-
-
                 }
 
 
