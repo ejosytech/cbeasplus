@@ -8,11 +8,14 @@ import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,6 +23,7 @@ import java.util.Date;
 
 public class SmsBroadcastRxActivity extends AppCompatActivity {
     private DatabaseHelper db;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +65,25 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
                 objectClient = db.readSingleRecord(OrignAddrr);
 
                 Log.d("objectClient.name", "objectClient.name: " + objectClient.name);
+               // Trigger Alarm
 
+                final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
+                //MediaPlayer
+
+                mediaPlayer = MediaPlayer.create(SmsBroadcastRxActivity.this, Settings.System.DEFAULT_RINGTONE_URI);
+
+                mediaPlayer.start(); // no need to call prepare(); create() does that for you
+
+
+                //try {
+                //    mediaPlayer.prepare();
+                //} catch (IOException e) {
+               //     e.printStackTrace();
+               // }
+                //mediaPlayer.setVolume(1f, 1f);
+                //mediaPlayer.setLooping(false);
+                rippleBackground.startRippleAnimation();
+                //mediaPlayer.start();
                 //
                 TextView txPhoneNo = findViewById(R.id.txPhoneNo);
                 TextView txaddress = findViewById(R.id.txaddress);
@@ -73,6 +95,10 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
             }
         }
     }
+
+
+
+
 
 
 

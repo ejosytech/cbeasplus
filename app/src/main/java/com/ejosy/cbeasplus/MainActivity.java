@@ -159,9 +159,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // attaching data adapter to spinner:emergency_type
         spinner_emergency_type.setAdapter(dataAdapter_emergency_type);
         //
-
-
-
         Button activateAlertBtn = findViewById(R.id.btnSendAlert);
         activateAlertBtn.setEnabled(false);
         activateAlertBtn.setOnClickListener(new View.OnClickListener() {
@@ -403,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(getApplicationContext(), "Volley Error Occured",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Data may not be updated. \n No Internet Connectivity",Toast.LENGTH_LONG).show();
                     }
                 });
 
