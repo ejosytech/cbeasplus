@@ -14,4 +14,5 @@
     <string name="btn_verify_reg">Verify Registration Status</string>
     <string name="txt_phone">Enter Phone Number</string>
     <string name="txaddress">Adress</string>
+    <string name="btn_map">Incidence location</string>
 </resources>

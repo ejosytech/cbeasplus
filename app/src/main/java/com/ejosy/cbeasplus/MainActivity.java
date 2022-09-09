@@ -22,6 +22,7 @@ import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +34,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -49,9 +52,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
-
+import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -72,19 +75,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public String selected_item = "";
     public String selected_item_position = "";
     public String Extract_signal;
-    public String srcphone;
+    public String src_tx_phone;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //
         db = new DatabaseHelper(this);
+        //Extract Stored Phone Number
+        src_tx_phone = db.getContent_reg();
         //
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // REFRESH LOCAL DB
         LoadClients();
+
         //
+
         //Major Key to enable app usage
         //
         Switch switchEnableBtnAlarm= findViewById(R.id.btn_sw_enable);
@@ -183,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 {
 
                  // @SuppressLint("Range") String phone = Cptr.getString(Cptr.getColumnIndex("phone"));
-                    @SuppressLint("Range") String phone = Cptr.getString(0);
+                    @SuppressLint("Range") String dst_rx_phone = Cptr.getString(0);
                     @SuppressLint("Range") String Name = Cptr.getString(1);
                     //Toast.makeText(MainActivity.this, "Phone:" + phone, Toast.LENGTH_SHORT).show();
                     //Toast.makeText(MainActivity.this, "Alert Sent to " + Name, Toast.LENGTH_SHORT).show();
@@ -195,9 +202,32 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     //
                     //Messaging
                     //srcphone = GetNumber();
-                 if (phone != "8033927733") {
-                     String phoneNumber = "+234" + phone;
+                 if (dst_rx_phone != "8033927733") {
+                     String phoneNumber = "+234" + dst_rx_phone;
                      sendSMS(phoneNumber, message);
+                     //String vsrc_tx_timestamp;
+                     //String vsrc_tx_phone;
+                     //String vdst_rx_phone;
+                     //String vtx_msg;
+                     //String vsrc_tx_signal;
+                     String latv = GPSLocation.substring(GPSLocation.indexOf("T") + 1, GPSLocation.indexOf("G"));
+                     String longv = GPSLocation.substring(GPSLocation.indexOf("G") + 1);
+                     StringBuilder str_longv = new StringBuilder(longv);
+                     //insert character value at offset 8
+                     StringBuilder str_latv = new StringBuilder(latv);
+                     str_latv.insert(1, '.');
+                     str_longv.insert(1, '.');
+                     Extract_signal="do";
+
+                     Toast.makeText(MainActivity.this, "msgTimeStamp " +  msgTimeStamp, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "src_tx_phone " +  src_tx_phone, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "dst_rx_phone " +  dst_rx_phone, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "selected_item " +  selected_item, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "Extract_signal " +  Extract_signal, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "latv " +  latv, Toast.LENGTH_SHORT).show();
+                     Toast.makeText(MainActivity.this, "longv " +  longv, Toast.LENGTH_SHORT).show();
+                     // insert character value at offset 8
+                    postTxPerformanceMetricsData(msgTimeStamp, src_tx_phone, dst_rx_phone, selected_item, Extract_signal, latv , longv );
                  }
 
                     //Toast.makeText(MainActivity.this, "Src Phone " +  srcphone, Toast.LENGTH_SHORT).show();
@@ -388,7 +418,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                                 JSONObject clients = array.getJSONObject(i);
 
                                 //Fill SQLite DB with extraxted version from portal
-                                db.addClient(clients.getInt("id"),clients .getString("phone"), clients .getString("name"), clients.getString("designation"), clients.getString("avenue"),clients.getString("street") );
+                                db.addClient(clients.getInt("id"),clients.getString("phone"), clients .getString("name"), clients.getString("designation"), clients.getString("avenue"),clients.getString("street") );
 
                             }
 
@@ -539,6 +569,83 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     }
+
+    private void postTxPerformanceMetricsData(String vsrc_tx_timestamp, String vsrc_tx_phone, String vdst_rx_phone, String vtx_msg, String vsrc_tx_signal, String vsrc_tx_lat,String vsrc_tx_long)
+    {
+        // url to post our Transmit performance metric Source data
+        String url = "https://cbeas.ramsme.com/api/metrics-tx.php";
+
+        Log.i("debugvolley", "vsrc_tx_timestamp: " + vsrc_tx_timestamp);
+        // creating a new variable for our request queue
+        // Creating Volley newRequestQueue .
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+        StringRequest request = new StringRequest(Request.Method.POST, url, new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                // on below line we are displaying a success toast message.
+                //Toast.makeText(MainActivity.this, "Data added to API", Toast.LENGTH_SHORT).show();
+                try {
+                    //converting response to json object
+                    JSONObject obj = new JSONObject(response);
+                    //if no error in response
+                    if(!obj.getBoolean("error")) {
+                        Log.i("debugvolley", "No Error Response: " + obj.getString("message"));
+                        Toast.makeText(getApplicationContext(), "No Error Response Message: " + obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                    }
+                    if(obj.getBoolean("error")) {
+                        Log.i("debugvolley", "Error Response: " + obj.getString("message"));
+                        Toast.makeText(getApplicationContext(), "Error Response Message: " + obj.getString("message"), Toast.LENGTH_SHORT).show();
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // method to handle errors.
+                Toast.makeText(MainActivity.this, "Fail to get response = " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                Log.i("debugvolley-getParams", "vsrc_tx_timestamp: " + vsrc_tx_timestamp);
+                params.put("src_tx_timestamp", vsrc_tx_timestamp);
+                params.put("src_tx_phone", vsrc_tx_phone);
+                params.put("dst_rx_phone", vdst_rx_phone);
+                params.put("tx_msg", vtx_msg);
+                params.put("src_tx_signal", vsrc_tx_signal);
+                params.put("src_tx_lat", vsrc_tx_lat);
+                params.put("src_tx_long", vsrc_tx_long);
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
+        // below line is to make
+        // Creating RequestQueue.
+
+        // Adding the StringRequest object into requestQueue.
+        requestQueue.add(request);
+
+    }
+
 
 
     @Override
