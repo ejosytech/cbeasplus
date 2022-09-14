@@ -67,9 +67,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     // We can give any value
     // but unique for each permission.
     private static final int SMS_SEND_PERMISSION_CODE = 100;
-    private static final int SMS_RECEIVED_PERMISSION_CODE = 101;
-    private static final int READ_PHONE_NUMBERS_PERMISSION_CODE = 102;
-    private static final int READ_PHONE_STATE_PERMISSION_CODE = 103;
+    public static final int SMS_RECEIVED_PERMISSION_CODE = 101;
 
     //Spinner
     public String selected_item = "";
@@ -109,43 +107,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             switchEnableBtnAlarm.setEnabled(true);
         }
         //
-        //SIGNAL STRENGHT EXTRACT
-        final TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-        telephonyManager.listen(new PhoneStateListener() {
-
-            @Override
-            public void onSignalStrengthsChanged(SignalStrength strength) {
-                super.onSignalStrengthsChanged(strength);
-
-                if (strength.isGsm()) {
-                    String[] parts = strength.toString().split(" ");
-                    String signalStrength = "";
-                    int currentStrength = strength.getGsmSignalStrength();
-                    if (currentStrength <= 0) {
-                        if (currentStrength == 0) {
-                            signalStrength = String.valueOf(Integer.parseInt(parts[3]));
-                        } else {
-                            signalStrength = String.valueOf(Integer.parseInt(parts[1]));
-                        }
-                        signalStrength += " dBm";
-                    } else {
-                        if (currentStrength != 99) {
-                            signalStrength = String.valueOf(((2 * currentStrength) - 113));
-                            signalStrength += " dBm";
-                            Extract_signal = signalStrength;
-                        }
-                    }
-                    //signal = (2 * signal) - 113;
-                    System.out.println("Signal strength is : " + signalStrength);
-                    System.out.println("Extract_signal : " + Extract_signal);
-                    Extract_signal = signalStrength;
-                } else {
-                    Extract_signal= "Not GSM Signal";
-                }
-            }
-        }, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-        //
-        //
 
         //
         // Spinner: emergency_type element
@@ -171,6 +132,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         activateAlertBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //
+                //checkPermission(Manifest.permission.READ_PHONE_STATE, READ_PHONE_STATE_PERMISSION_CODE);
+                checkPermission(Manifest.permission.RECEIVE_SMS, SMS_RECEIVED_PERMISSION_CODE);
+                checkPermission(Manifest.permission.SEND_SMS, SMS_SEND_PERMISSION_CODE);
 
                 //
                 GPSTracker gpsTracker = new GPSTracker(MainActivity.this);
@@ -179,9 +144,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 String  msgTimeStamp =  TimeStamp();
                 // Attach TimeStamp, Selected Message and GPSLocation
                 String message = msgTimeStamp + selected_item_position + GPSLocation;
-                //
 
-                checkPermission(Manifest.permission.SEND_SMS, SMS_SEND_PERMISSION_CODE);
                 //Toast.makeText(MainActivity.this, "Alert Btn Click", Toast.LENGTH_SHORT).show();
                 //
                 // Send Messages to All Suscribers
@@ -204,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     //srcphone = GetNumber();
                  if (dst_rx_phone != "8033927733") {
                      String phoneNumber = "+234" + dst_rx_phone;
+
                      sendSMS(phoneNumber, message);
                      //String vsrc_tx_timestamp;
                      //String vsrc_tx_phone;
@@ -217,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                      StringBuilder str_latv = new StringBuilder(latv);
                      str_latv.insert(1, '.');
                      str_longv.insert(1, '.');
-                     Extract_signal="do";
+                     //Extract_signal="do";
 
                      Toast.makeText(MainActivity.this, "msgTimeStamp " +  msgTimeStamp, Toast.LENGTH_SHORT).show();
                      Toast.makeText(MainActivity.this, "src_tx_phone " +  src_tx_phone, Toast.LENGTH_SHORT).show();
@@ -252,7 +216,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
         });
+
+
     }
+
+
 
 
     @Override
@@ -268,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         switch (id){
             case R.id.register:
                 //Toast.makeText(getApplicationContext(),"Item 1 Selected",Toast.LENGTH_LONG).show();
-                Intent myIntent = new Intent(MainActivity.this, RegisterActivity.class);
+                Intent myIntent = new Intent(MainActivity.this, RegistryPrefrenceActivity.class);
                 //myIntent.putExtra("key", value); //Optional parameters
                 MainActivity.this.startActivity(myIntent);
                 return true;
@@ -357,22 +325,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(MainActivity.this, "SMS Received Permission Denied", Toast.LENGTH_SHORT).show();
             }
         }
-        else if (requestCode == READ_PHONE_NUMBERS_PERMISSION_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //Toast.makeText(MainActivity.this, "SMS Received Permission Granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "READ PHONE NUMBERS Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else if (requestCode == READ_PHONE_STATE_PERMISSION_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //Toast.makeText(MainActivity.this, "SMS Received Permission Granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "READ PHONE STATE Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
+
 
     }
     @Override
@@ -556,19 +509,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return timestamp;
     }
 
-    // Function will run after click to button
-    public String GetNumber() {
-            // Permission check
-        //checkPermission(Manifest.permission.READ_PHONE_STATE, READ_PHONE_STATE_PERMISSION_CODE);
-        // Create obj of TelephonyManager and ask for current telephone service
-        checkPermission(Manifest.permission.READ_PHONE_NUMBERS, READ_PHONE_NUMBERS_PERMISSION_CODE);
-            TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-             String line1Number = telephonyManager.getLine1Number();
-            return line1Number;
 
-
-
-    }
 
     private void postTxPerformanceMetricsData(String vsrc_tx_timestamp, String vsrc_tx_phone, String vdst_rx_phone, String vtx_msg, String vsrc_tx_signal, String vsrc_tx_lat,String vsrc_tx_long)
     {

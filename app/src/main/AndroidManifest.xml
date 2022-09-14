@@ -21,6 +21,9 @@
         android:theme="@style/Theme.Cbeasplus"
         tools:targetApi="31">
         <activity
+            android:name=".RegistryPrefrenceActivity"
+            android:exported="false" />
+        <activity
             android:name=".mapView"
             android:exported="false" />
         <activity
@@ -42,8 +45,9 @@
         <receiver
             android:name=".SmsBroadcastRx"
             android:enabled="true"
-            android:exported="true">
-            <intent-filter>
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="2147483647">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>

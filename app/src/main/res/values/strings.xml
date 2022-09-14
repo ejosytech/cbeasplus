@@ -13,6 +13,10 @@
     <string name="btn_reg">Register</string>
     <string name="btn_verify_reg">Verify Registration Status</string>
     <string name="txt_phone">Enter Phone Number</string>
-    <string name="txaddress">Adress</string>
+    <string name="txaddress">Address</string>
     <string name="btn_map">Incidence location</string>
+    <string name="name">Name</string>
+    <string name="PreferenceMobile">Mobile</string>
+    <string name="pref_display_reg_status">Status</string>
+    <string name="btn_verify">Register/Verify</string>
 </resources>

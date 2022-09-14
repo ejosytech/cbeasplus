@@ -43,7 +43,7 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private String latitude_str;
     private String longitude_str;
-    String Extract_signal = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,7 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(this);
         String srcphone = db.getContent_reg();
+
 
         if (!db.PhoneExist_subscription(srcphone)) {
             // If Client has not subscribed access is denied
@@ -91,43 +92,6 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
                 latitude_str = message.substring(message.indexOf("T") + 1, message.indexOf("G"));
                 longitude_str = message.substring(message.indexOf("G") + 1, message.indexOf("D"));
                 //
-                //SIGNAL STRENGHT EXTRACT
-                final TelephonyManager telephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-                telephonyManager.listen(new PhoneStateListener() {
-
-                    @Override
-                    public void onSignalStrengthsChanged(SignalStrength strength) {
-                        super.onSignalStrengthsChanged(strength);
-
-
-                        if (strength.isGsm()) {
-                            String[] parts = strength.toString().split(" ");
-                            String signalStrength = "";
-                            int currentStrength = strength.getGsmSignalStrength();
-                            if (currentStrength <= 0) {
-                                if (currentStrength == 0) {
-                                    signalStrength = String.valueOf(Integer.parseInt(parts[3]));
-                                } else {
-                                    signalStrength = String.valueOf(Integer.parseInt(parts[1]));
-                                }
-                                signalStrength += " dBm";
-                            } else {
-                                if (currentStrength != 99) {
-                                    signalStrength = String.valueOf(((2 * currentStrength) - 113));
-                                    signalStrength += " dBm";
-                                    Extract_signal = signalStrength;
-                                }
-                            }
-                            //signal = (2 * signal) - 113;
-                            System.out.println("Signal strength is : " + signalStrength);
-                            System.out.println("Extract_signal : " + Extract_signal);
-                            Extract_signal = signalStrength;
-                        } else {
-                            Extract_signal= "Not GSM Signal";
-                        }
-                    }
-                }, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-
 
                 final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.content);
                 //MediaPlayer
@@ -164,7 +128,7 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
                 Toast.makeText(SmsBroadcastRxActivity.this, "rxTimeStamp " +  rxTimeStamp, Toast.LENGTH_SHORT).show();
                 Toast.makeText(SmsBroadcastRxActivity.this, "rxphone" +  rxphone, Toast.LENGTH_SHORT).show();
                 Toast.makeText(SmsBroadcastRxActivity.this, "rx_msg " +  rxmsg, Toast.LENGTH_SHORT).show();
-                Toast.makeText(SmsBroadcastRxActivity.this, "Extract_signal " +  Extract_signal, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SmsBroadcastRxActivity.this, "Extract_signal " +  Extract_signal, Toast.LENGTH_SHORT).show();
                 Toast.makeText(SmsBroadcastRxActivity.this, "latitude_str " +  latitude_str, Toast.LENGTH_SHORT).show();
                 Toast.makeText(SmsBroadcastRxActivity.this, "longitude_str " +  longitude_str, Toast.LENGTH_SHORT).show();
 
@@ -174,7 +138,7 @@ public class SmsBroadcastRxActivity extends AppCompatActivity {
                         String dst_rx_timestamp = rxTimeStamp;
                         String dst_rx_phone = rxphone ;
                         String rx_msg = rxmsg;
-                        String dst_rx_signal = Extract_signal;
+                        String dst_rx_signal = "";
                         String dst_rx_lat = latitude_str ;
                         String dst_rx_long = longitude_str;
 
